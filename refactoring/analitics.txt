@@ -1,0 +1,173 @@
+СИСТЕМНАЯ АНАЛИТИКА ПО УТВЕРЖДЁННОМУ SCOPE
+Проект: fff (NestJS + Prisma/SQLite + React/Vite + nginx)
+Дата: 2026-11-16
+Статус: финальная аналитика текущего цикла после получения architect.txt и согласования Lead.
+
+1. Назначение и границы
+
+Цикл ограничен безопасным clean-code/refactoring без изменения публичного поведения. Цель — сделать код читаемее и тестируемее, зафиксировать существующие контракты и устранить только согласованные дефекты ввода/обработки ошибок.
+
+Разрешены:
+- читаемое разбиение TasksService, typed helpers и nullish-safe handling;
+- отказ от title/description, состоящих только из пробелов (с тестами и явным 400);
+- локальные unit/integration/smoke тесты;
+- API-клиент frontend с корректной обработкой 204, 401, JSON/non-JSON ошибок при сохранении URL, заголовков и payload;
+- безопасная унификация theme state без изменения пользовательского UX-контракта;
+- документация переменных окружения и текущего token-контракта.
+
+Не являются целью исправления безопасности или миграции: авторизация, схема/миграции БД, state machine, nginx и deployment topology.
+
+2. Фактическая архитектура и потоки
+
+Backend:
+- `backend/src/main.ts` создаёт Nest-приложение, устанавливает глобальный префикс `/api`, подключает middleware проверки токена, CORS и ValidationPipe.
+- `AppModule` подключает статическую раздачу frontend, PrismaModule и TasksModule.
+- `TasksController` предоставляет операции задач; `TasksService` работает через PrismaService.
+- Prisma-модель `Task` хранится в SQLite; status и priority остаются строковыми полями.
+
+Frontend:
+- `frontend/src/api.ts` строит URL из `VITE_API_BASE_URL` (по умолчанию `/api`) и отправляет JSON и `x-access-token`.
+- `App.tsx` загружает board/backlog/archive, выполняет CRUD, drag-and-drop с optimistic update и rollback, archive/restore, тему и настройки.
+- Статусы доски: ASSIGNED, IN_PROGRESS, DONE; коллекции: BACKLOG и ARCHIVED.
+
+Infrastructure:
+- nginx слушает HTTP-порт 80, применяет Basic Auth и проксирует `/api/` на backend:3000, `/` на frontend:8000.
+- docker-compose поднимает backend/frontend Node-контейнеры, использует `prisma db push`; текущие публичные порты и маршрутизация не меняются.
+
+3. API-сценарии и неизменяемый контракт
+
+Сохраняются global prefix `/api`, пути, payload/response shape, статус-коды и semantics переходов. Существующие маршруты:
+- GET `/api/tasks` — задачи доски (ASSIGNED/IN_PROGRESS/DONE);
+- GET `/api/tasks/backlog` — BACKLOG;
+- GET `/api/tasks/archived` — ARCHIVED;
+- POST `/api/tasks` — создание;
+- PATCH `/api/tasks/:id` — обновление;
+- PATCH `/api/tasks/:id/move` — перемещение;
+- PATCH `/api/tasks/reorder` — legacy перемещение с id в body, сохраняется;
+- PATCH `/api/tasks/:id/archive` — архивирование;
+- PATCH `/api/tasks/:id/restore` — восстановление;
+- DELETE `/api/tasks/:id` — удаление.
+
+Публичный token-based контракт:
+- backend сравнивает значение заголовка `x-access-token` с `TOKEN`;
+- frontend продолжает отправлять `VITE_TOKEN` в каждом API-запросе;
+- имя заголовка, формат значения, статус 401 и порядок middleware не меняются;
+- фактические значения секретов в эту аналитику не включаются.
+
+Ограничение совместимости: при unset `TOKEN` middleware сейчас пропускает запросы (fail-open). Это принятое legacy-поведение текущего цикла, а не рекомендуемая security-политика. При заданном `TOKEN` отсутствие заголовка или неверное значение должны приводить к 401.
+
+4. Матрица авторизации и регрессии
+
+Для окружения с заданным TOKEN проверить каждый endpoint из раздела 3 минимум одним чтением и одной мутацией:
+
+| Ситуация | Ожидаемый результат | Статус |
+|---|---|---|
+| Корректный `x-access-token` | API выполняет запрос согласно текущему контракту | 2xx либо текущая доменная ошибка |
+| Заголовок отсутствует | Данные/мутация не выполняются | 401 |
+| Неверный токен | Данные/мутация не выполняются | 401 |
+| Пустой/обрезанный токен | Данные/мутация не выполняются | 401 |
+| TOKEN unset | Сохраняется текущее legacy fail-open поведение; проверка документирует риск | legacy compatibility |
+| Запрос через nginx без Basic Auth | Запрос не проходит внешний perimeter | 401 от nginx |
+| Запрос через nginx с Basic Auth, но без/с неверным API token | nginx пропускает perimeter, backend отклоняет API | 401 от backend |
+
+Матрица не означает, что в рамках этого цикла нужно усиливать auth. Она предотвращает случайное изменение поведения при clean-code правках. Нельзя печатать токен в логах, тестовых отчётах, ошибках или документации.
+
+Отдельно зафиксировать: VITE_TOKEN попадает в browser bundle и поэтому не является секретом от пользователя браузера. Это совместимость/legacy-риск. Перевод на BFF/httpOnly cookie, ротацию, constant-time comparison, fail-closed или иной механизм доставки секрета вынесен за пределы цикла.
+
+5. Backend требования и критерии приёмки
+
+5.1 TasksService
+- Разбить длинные/однострочные методы на именованные функции без изменения SQL-смысла, сортировки, порядка полей ответа, статусов и переходов.
+- Сохранить transaction boundary в move/remove и текущую нормализацию order.
+- Сохранить defaults create, archive -> ARCHIVED, restore -> DONE, свободные status transitions и текущую обработку legacy reorder.
+- Не менять Prisma String, SQLite, индексы, schema или команду db push.
+- Удалить неиспользуемые импорты и добавить локальные типы только там, где они не меняют runtime-контракт.
+
+5.2 DTO и входные данные
+- Сохранить whitelist, transform и forbidNonWhitelisted.
+- `title` и `description`, равные пустой строке после trim, отклонять до вызова сервиса с 400; нормальные строки по-прежнему trim-ятся сервисом.
+- Unknown fields, invalid status/priority/color/date продолжают отклоняться ValidationPipe.
+- Nullish-safe handling не должен превращать отсутствующее поле в изменение значения или менять PATCH semantics.
+- Не менять форматы дат, имена полей или response DTO.
+
+5.3 Backend acceptance
+- `pnpm`/выбранный текущий runner выполняет typecheck и backend build без ошибок.
+- Unit tests покрывают whitespace-only DTO, create/update defaults, not-found, move/reorder compatibility и auth regression matrix.
+- Для заданного TOKEN все API-маршруты из матрицы дают 401 без/при неверном токене и проходят с корректным токеном.
+- При unset TOKEN regression test документирует и фиксирует legacy fail-open, не раскрывая секрет.
+- Не изменён файл/участок auth middleware `main.ts:9-15` и не изменены CORS, API paths, status codes, DB schema.
+
+6. Frontend требования и критерии приёмки
+
+- Сохранить API base URL composition, `x-access-token` header, HTTP methods, paths, payload names and values.
+- Обработать 204 без попытки обязательного JSON parse.
+- Обрабатывать JSON и non-JSON ошибки с безопасным сообщением; не включать token в Error/message.
+- Для 401 показать понятное состояние/сообщение существующими средствами UI, не подменяя статус и не делая несанкционированный retry.
+- Optimistic drag-and-drop по-прежнему откатывает состояние при отказе API.
+- Theme state имеет один согласованный источник истины; переключение, initial state и reload не ломают текущий UX. Не менять палитру/продуктовую семантику.
+- Не реализовывать persistence настроек dueDays/overdueColor в этом цикле: текущая UI-only природа и частично неиспользуемый overdueColor — документированный follow-up.
+- `VITE_TOKEN` остаётся способом поставки текущего токена; не заменять BFF/httpOnly cookie.
+
+Frontend acceptance:
+- typecheck/build проходят; только известное предупреждение о размере bundle допускается, если не появилось новой регрессии;
+- unit/smoke tests проверяют URL, заголовок, payload, 204, 401, JSON/non-JSON error и rollback;
+- ручной smoke: board/backlog/archive load, create/edit/delete, move, archive/restore, reload persistence и theme toggle.
+
+7. Infrastructure и security boundaries (только фиксация)
+
+В текущем цикле не менять:
+- nginx Basic Auth, маршруты, proxy behavior и внешний HTTP perimeter;
+- compose ports 3000/8000, topology и deployment commands;
+- CORS policy и порядок global middleware;
+- Prisma db push, SQLite, отсутствие отдельного persistent DB volume;
+- отсутствие health/readiness, security headers, rate limiting и structured observability.
+
+Риски, которые должны быть явно отмечены в задаче/QA:
+- TOKEN unset открывает API (fail-open);
+- VITE_TOKEN виден в browser bundle и не является секретом;
+- прямые backend/frontend compose ports потенциально обходят nginx Basic Auth, если доступны из сети;
+- Basic Auth и API token образуют два слоя, но их ownership не формализован;
+- preflight OPTIONS также проходит global token middleware и может требовать token; не исправлять это незаметно в cleanup;
+- CORS production defaults, nginx limits/headers/timeouts и секреты `.env` требуют отдельного hardening.
+
+8. QA-план и проверяемые этапы
+
+Этап A — baseline и контракт:
+1. Зафиксировать backend/frontend build и typecheck до изменений.
+2. Выполнить auth matrix с безопасными placeholder/fixture секретами.
+3. Выполнить smoke всех read/mutation API и сохранить status/shape без секретов.
+
+Этап B — backend clean-code:
+1. Проверить DTO whitespace-only и nullish cases.
+2. Запустить unit/integration tests TasksService и reorder.
+3. Повторить auth matrix и проверить отсутствие diff в auth semantics/schema.
+
+Этап C — frontend cleanup:
+1. Проверить API client 204/401/JSON/non-JSON.
+2. Проверить optimistic rollback, theme initial/toggle/reload и CRUD smoke.
+3. Повторить frontend build/typecheck.
+
+Этап D — финальная регрессия:
+- backend build/typecheck/tests;
+- frontend build/typecheck/tests;
+- smoke через nginx с Basic Auth и token;
+- при возможности smoke прямого backend с token (без изменения topology);
+- проверка git diff/изменённых файлов: только согласованные clean-code, tests и документация;
+- проверка, что секреты не попали в исходники, логи, артефакты или отчёты.
+
+Definition of Done:
+- публичные API/auth/DB/nginx контракты не изменены;
+- whitespace-only input rejection покрыта тестом и согласована как единственное изменение validation behavior;
+- все acceptance checks пройдены либо явно записаны как недоступные из-за отсутствия runtime/fixtures;
+- legacy security risks и out-of-scope решения присутствуют в release notes/QA evidence;
+- нет коммитов, миграций и незапланированных файлов.
+
+9. Отложенные решения (follow-up)
+
+Отдельного согласования требуют: fail-closed production config; BFF/httpOnly cookie или иная server-mediated auth; constant-time comparison/rotation; закрытие прямых compose ports; typed config и health/readiness; Prisma enum/DB CHECK и migrations; PostgreSQL decision; state machine; concurrency-safe ordering; settings persistence; legacy reorder deprecation; nginx hardening; bundle code-splitting.
+
+Все перечисленные решения OUT OF SCOPE текущего цикла и не должны быть внедрены под видом clean-code.
+
+10. Ограничения анализа
+
+Исходный код и конфигурация изучены статически после появления architect.txt. До аналитики runtime-код не изменялся и коммиты не выполнялись. Полноценные unit/e2e тесты в исходном репозитории отсутствовали; runtime nginx/production secrets не запускались. Поэтому приёмка требует QA evidence, но не утверждает прохождение непроведённых тестов.

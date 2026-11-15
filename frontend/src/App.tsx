@@ -45,7 +45,12 @@ const ENV_CARD_COLORS = {
 };
 type Tab = "board" | "backlog" | "archive" | "settings";
 
-export default function App() {
+interface AppProps {
+  dark: boolean;
+  onToggleTheme: () => void;
+}
+
+export default function App({ dark, onToggleTheme }: AppProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [backlog, setBacklog] = useState<Task[]>([]);
   const [archived, setArchived] = useState<Task[]>([]);
@@ -55,17 +60,10 @@ export default function App() {
   const [activeId, setActiveId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [dark, setDark] = useState(
-    () => localStorage.getItem("kanban-theme") === "dark",
-  );
   const [settings, setSettings] = useState(() => ({
     dueDays: Number(import.meta.env.VITE_DEFAULT_DUE_DAYS || 14),
     overdueColor: import.meta.env.VITE_OVERDUE_CARD_COLOR || "#FFF0F0",
   }));
-  useEffect(() => {
-    document.documentElement.dataset.theme = dark ? "dark" : "light";
-    localStorage.setItem("kanban-theme", dark ? "dark" : "light");
-  }, [dark]);
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -365,7 +363,7 @@ export default function App() {
                 aria-label="Переключить тему"
                 type="text"
                 icon={dark ? <SunOutlined /> : <BulbOutlined />}
-                onClick={() => setDark((value) => !value)}
+                onClick={onToggleTheme}
               />
             </Tooltip>
             <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>

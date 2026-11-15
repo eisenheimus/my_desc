@@ -1,0 +1,16 @@
+# Quality tooling and environment documentation
+
+Роль: developer-infra
+Статус: DONE
+
+Выполнено:
+- Добавлены Vite client typings и frontend `typecheck` script.
+- Исправлены текущие frontend TypeScript baseline errors без изменения API/auth behavior.
+- Обновлены только `backend/.env.example` и `frontend/.env.example`: описаны x-access-token, TOKEN/VITE_TOKEN, nginx Basic Auth, ports и legacy fail-open при unset TOKEN; реальные `.env` не трогались.
+- docker-compose, nginx, ports, auth, CORS и DB schema не изменялись.
+
+Проверки:
+- `frontend npm.cmd run typecheck` — PASS.
+- `frontend npm.cmd run build` — PASS; сохранено существующее предупреждение Vite о крупном чанке.
+
+Без коммита.

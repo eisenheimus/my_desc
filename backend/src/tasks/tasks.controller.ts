@@ -40,7 +40,7 @@ export class TasksController {
 
   @Patch('reorder')
   reorder(@Body() dto: MoveTaskDto) {
-    if (dto.id === undefined) {
+    if (dto.id == null) {
       throw new BadRequestException('id is required for reorder');
     }
     return this.tasksService.move(dto.id, dto);

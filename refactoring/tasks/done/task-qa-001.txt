@@ -1,0 +1,29 @@
+# QA evidence: task-qa-001
+
+Роль: qa-backend
+Статус: PASS (static/runtime checks completed)
+
+Проверенный scope: изменения task-code-001 в backend service, DTO и controller. Исходники не изменялись в рамках QA.
+
+## Checks
+
+1. `pnpm run build` (bundled Node/pnpm, `backend/`) — PASS, `nest build` завершился без ошибок.
+2. `pnpm exec tsc --noEmit` — PASS, без диагностик.
+3. `pnpm exec prisma validate` — PASS, schema valid. Prisma schema не изменена.
+4. DTO runtime validation against compiled classes:
+   - Create `{title: "   ", description: "ok"}` → `notWhitespaceOnly` error — PASS.
+   - Create `{title: "ok", description: "   "}` → `notWhitespaceOnly` error — PASS.
+   - Update `{title: "   "}` → `notWhitespaceOnly` error — PASS.
+   - Create with unknown `extra` field → `whitelistValidation` error when `whitelist/forbidNonWhitelisted` options are enabled — PASS.
+   - `NotWhitespaceOnlyConstraint`: normal string with surrounding spaces accepted; whitespace-only rejected — PASS.
+5. Compiled controller inspection: `reorder(dto)` checks `dto.id == null` and throws `BadRequestException("id is required for reorder")`; valid payload delegates to `tasksService.move(dto.id, dto)` — PASS. This preserves legacy route/payload behavior and rejects both null and undefined IDs.
+6. Compiled service inspection confirms methods `findAll`, `findBacklog`, `findArchived`, `create`, `update`, `move`, `archive`, `restore`, `remove` remain present. Refactor retains Prisma transaction use in move/remove, existing order helpers, defaults and response-returning Prisma calls — PASS by static review.
+7. `main.ts` remains unchanged in inspected diff: `/api`, `TOKEN`/`x-access-token` middleware, CORS and ValidationPipe configuration preserved. Prisma schema, API paths/statuses and DTO payload fields remain unchanged apart from intended whitespace validation.
+
+## Authorization evidence
+
+No token value was read or included in this report. Static review confirms the `x-access-token`/`TOKEN` contract in `main.ts` is unchanged.
+
+## Scope limitation
+
+No live HTTP server/e2e database CRUD run was performed; service semantics were verified by compiled static inspection and build/typecheck, as no test harness exists in the repository. No defects found within task-qa-001 acceptance criteria.

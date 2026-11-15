@@ -1,0 +1,15 @@
+ID: task-architect-001
+Title: Архитектурный анализ и план рефакторинга проекта fff
+Owner: architect
+Status: done
+Created: 2026-11-16
+Completed: 2026-11-16
+
+Scope:
+- Проанализировать NestJS/Prisma backend, React/Vite frontend, nginx/docker-compose и авторизацию.
+- Подготовить подробный отчет в refactoring/architect.txt.
+- Сохранить token-based authorization contract без изменений.
+- Зафиксировать риски, чистый код, архитектуру, тестируемость, deployment и спорные решения.
+
+Deliverable: ../architect.txt
+Verification: backend `nest build` passed; frontend `vite build` passed with chunk-size warning; no source runtime changes.

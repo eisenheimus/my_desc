@@ -1,0 +1,41 @@
+# QA evidence: frontend API client and theme cleanup
+
+Роль: qa-frontend
+Статус: DONE
+
+Проверенный scope: task-code-002 (`frontend/src/api.ts`, `frontend/src/main.tsx`, `frontend/src/App.tsx`).
+
+## Автоматические проверки
+
+- `pnpm exec tsc --noEmit` — успешно, ошибок TypeScript нет.
+- `pnpm build` — успешно: 3037 modules transformed, production bundle собран.
+- Единственное предупреждение — известное предупреждение Vite о размере JS chunk: 1,033.88 kB после minification (примерно 1.03 MB); новых build/type errors нет.
+
+## API client regression
+
+- Сохранены base URL composition (`VITE_API_BASE_URL` с fallback `/api` и удалением завершающего `/`) и удаление префикса `/api` из path.
+- Сохранены методы, маршруты и payloads для list/backlog/archived/create/update/move/archive/restore/remove.
+- Каждый запрос передаёт `x-access-token` со значением `VITE_TOKEN`; token не включается в URL.
+- `204` возвращается без вызова `response.json()`.
+- `401` преобразуется в безопасное понятное сообщение без response body и без автоматического retry.
+- JSON message читается только из object/string; malformed JSON, non-JSON и пустой body обрабатываются fallback-логикой со статусом.
+- Error messages проходят redaction токена; значения token намеренно не приводятся в evidence.
+
+## Theme regression
+
+- Initial state читается из `localStorage.getItem("kanban-theme")`.
+- Root является единым источником состояния темы и передаёт `dark`/toggle в App.
+- Toggle обновляет `localStorage` и `document.documentElement.dataset.theme` (`dark`/`light`).
+- ConfigProvider использует согласованный `theme.darkAlgorithm`/`theme.defaultAlgorithm`; CSS содержит соответствующие light/dark правила.
+- После reload выбранная тема восстанавливается из localStorage.
+
+## Ручной smoke / ограничения
+
+Полный browser smoke с подключённым backend не запускался в рамках доступного окружения; API контракт проверен статически по client и backend routes. Перед release выполнить board/backlog/archive load, CRUD, move/rollback, archive/restore, а также auth/CORS smoke с тестовым токеном без записи его значения в логи.
+
+Известные legacy risks, не являющиеся регрессией task-code-002:
+
+- `VITE_TOKEN` встраивается в browser bundle и потому виден клиенту.
+- При unset backend `TOKEN` middleware сохраняет fail-open поведение.
+
+Код в scope не изменялся.

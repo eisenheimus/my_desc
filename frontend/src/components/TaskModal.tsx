@@ -69,7 +69,7 @@ export function TaskModal({
     const color =
       typeof values.color === "string"
         ? values.color
-        : (values.color?.toHexString?.() ?? "#FFFFFF");
+        : "#FFFFFF";
     await onSubmit({
       ...values,
       title: values.title.trim(),

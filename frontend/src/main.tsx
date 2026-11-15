@@ -10,12 +10,15 @@ import "./index.css";
 dayjs.locale("ru");
 
 function Root() {
-  const [dark] = useState(
+  const [dark, setDark] = useState(
     () => localStorage.getItem("kanban-theme") === "dark",
   );
+
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? "dark" : "light";
+    localStorage.setItem("kanban-theme", dark ? "dark" : "light");
   }, [dark]);
+
   return (
     <ConfigProvider
       locale={ruRU}
@@ -28,7 +31,7 @@ function Root() {
         },
       }}
     >
-      <App />
+      <App dark={dark} onToggleTheme={() => setDark((value) => !value)} />
     </ConfigProvider>
   );
 }

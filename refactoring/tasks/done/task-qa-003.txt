@@ -1,0 +1,17 @@
+# QA task: verify task-code-003
+
+Роль: QA
+Статус: DONE
+
+## Evidence
+
+- `frontend npm.cmd run typecheck` — PASS (TypeScript завершён без ошибок).
+- `frontend npm.cmd run build` — PASS (Vite завершён успешно). Сохранено ожидаемое предупреждение о крупном JS-чанке: `index-CCmh6wFv.js` 1,033.88 kB / 329.69 kB gzip; это не блокирует scope задачи.
+- Реальные `backend/.env` и `frontend/.env` присутствуют и не изменялись в ходе QA; QA выполнялся только чтением. Секреты не раскрывались.
+- Auth contract сохранён: backend читает `process.env.TOKEN` и проверяет `x-access-token`; frontend читает `VITE_TOKEN` и отправляет `x-access-token`; nginx сохраняет `auth_basic`/`.htpasswd`; compose ports сохранены `3000:3000` и `8000:8000`.
+- `docker-compose.yml`, `nginx/nginx.conf` и `backend/prisma/schema.prisma` не имеют изменений в QA diff. CORS runtime в `backend/src/main.ts` не изменён.
+- Legacy fail-open при unset `TOKEN` сохранён и задокументирован в examples; token authorization не менялся.
+
+Результат: QA PASS. Дефектов, блокирующих task-code-003, не обнаружено.
+
+Без коммита.

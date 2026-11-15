@@ -1,0 +1,16 @@
+# Backend clean-code and input validation
+
+Роль: developer-backend
+Статус: IN_PROGRESS
+Вход: refactoring/architect.txt, refactoring/analitics.txt.
+
+Сделать только безопасный backend-refactoring:
+1. Переписать компактные однострочные методы TasksService в читаемый формат с именованными локальными helpers/типами, сохранив SQL-смысл, сортировки, transaction boundaries, defaults, response shape и все API semantics.
+2. Добавить валидацию title/description, состоящих только из пробелов: такие значения должны давать 400 до сервиса; обычные строки по-прежнему trim-ятся. Согласовать с class-validator и не менять token middleware.
+3. Сделать reorder DTO/controller nullish-safe (null id не должен обходить проверку), сохранив legacy PATCH /tasks/reorder и его payload contract для валидных запросов.
+4. Удалить неиспользуемые импорты и добавить минимальные локальные unit tests только если test harness безопасно добавляется без крупных зависимостей.
+
+Запрещено: изменять main.ts auth/CORS, x-access-token/TOKEN semantics, Prisma schema/db push, status transitions, order algorithm, API paths/statuses/response payloads, nginx/compose.
+
+Проверки: backend typecheck/build; тесты или статические evidence. Не включать секреты в отчёты.
+После завершения переместить эту задачу в refactoring/tasks/done/task-code-001.txt и создать task-qa-001 в refactoring/tasks/ для qa-backend с изменёнными файлами, проверками и ожидаемыми контрактами. Не делать коммит.
