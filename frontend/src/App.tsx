@@ -35,6 +35,7 @@ import { STATUS_COLUMNS, type Task, type TaskStatus } from "./types";
 import { KanbanColumn } from "./components/KanbanColumn";
 import { TaskCard } from "./components/TaskCard";
 import { TaskModal, type TaskFormValues } from "./components/TaskModal";
+import { useTaskPreferences } from "./hooks/useTaskPreferences";
 import "./index.css";
 const CARD_PREFIX = import.meta.env.VITE_CARD_PREFIX || "CARD-";
 const { Header, Content } = Layout;
@@ -60,10 +61,7 @@ export default function App({ dark, onToggleTheme }: AppProps) {
   const [activeId, setActiveId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [settings, setSettings] = useState(() => ({
-    dueDays: Number(import.meta.env.VITE_DEFAULT_DUE_DAYS || 14),
-    overdueColor: import.meta.env.VITE_OVERDUE_CARD_COLOR || "#FFF0F0",
-  }));
+  const { preferences: settings, setPreferences: setSettings } = useTaskPreferences();
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -221,9 +219,11 @@ export default function App({ dark, onToggleTheme }: AppProps) {
           task={task}
           assignedColor={ENV_CARD_COLORS.created}
           archivedColor={ENV_CARD_COLORS.archived}
+          overdueColor={settings.overdueColor}
           cardPrefix={CARD_PREFIX}
           onOpen={openEdit}
           onRestore={action === "restore" ? restore : undefined}
+          sortable={false}
         />
       ))
     ) : (
@@ -318,9 +318,10 @@ export default function App({ dark, onToggleTheme }: AppProps) {
           <div className="column-title">Конфигурация доски</div>
         </div>
         <div className="settings-card">
-          <label>
+          <label htmlFor="default-due-days">
             Контрольный срок по умолчанию, дней
             <input
+              id="default-due-days"
               type="number"
               min="1"
               max="365"
@@ -333,9 +334,10 @@ export default function App({ dark, onToggleTheme }: AppProps) {
               }
             />
           </label>
-          <label>
+          <label htmlFor="overdue-card-color">
             Цвет карточки при истечении дедлайна
             <input
+              id="overdue-card-color"
               type="color"
               value={settings.overdueColor}
               onChange={(event) =>
@@ -413,6 +415,7 @@ export default function App({ dark, onToggleTheme }: AppProps) {
                   {activeTask ? (
                     <TaskCard
                       task={activeTask}
+                       overdueColor={settings.overdueColor}
                       onOpen={() => undefined}
                       overlay
                     />

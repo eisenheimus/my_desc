@@ -5,6 +5,7 @@ import ruRU from "antd/locale/ru_RU";
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
 import App from "./App";
+import "./styles/tokens.css";
 import "./index.css";
 
 dayjs.locale("ru");

@@ -1,6 +1,6 @@
 import type { CSSProperties, KeyboardEvent } from "react";
-import { Button, Dropdown, Tag } from "antd";
-import { InboxOutlined, MoreOutlined } from "@ant-design/icons";
+import { Button, Dropdown } from "antd";
+import { InboxOutlined, MoreOutlined, HolderOutlined } from "@ant-design/icons";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Task } from "../types";
@@ -12,7 +12,9 @@ interface Props {
   overlay?: boolean;
   assignedColor?: string;
   archivedColor?: string;
+  overdueColor?: string;
   cardPrefix?: string;
+  sortable?: boolean;
 }
 const priorityClass = {
   LOW: "priority-low",
@@ -27,9 +29,11 @@ export function TaskCard({
   overlay,
   assignedColor = "#5F76FC",
   archivedColor = "#000000",
-  cardPrefix = "CARD-",
+  overdueColor = "#ef7777",
+  cardPrefix = "CARD-", 
+  sortable: enableSorting = true,
 }: Props) {
-  const sortable = useSortable({ id: task.id });
+  const sortable = useSortable({ id: task.id, disabled: !enableSorting });
   const archived = task.status === "ARCHIVED";
   const overdue = !archived && new Date(task.dueDate).getTime() < Date.now();
   const style: CSSProperties = {
@@ -41,7 +45,7 @@ export function TaskCard({
       : task.status === "ASSIGNED"
         ? assignedColor
         : overdue
-          ? "#ef7777"
+          ? overdueColor
           : task.color,
   } as CSSProperties;
   const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -71,26 +75,29 @@ export function TaskCard({
       : [];
   return (
     <div
-      ref={overlay ? undefined : sortable.setNodeRef}
+      ref={overlay || !enableSorting ? undefined : sortable.setNodeRef}
       style={style}
       className={`task-card${overlay ? " task-card-overlay" : ""}${archived ? " task-card-archived" : ""}${overdue ? " task-card-overdue" : ""}`}
-      {...(overlay ? {} : sortable.attributes)}
-      {...(overlay ? {} : sortable.listeners)}
-      role="button"
-      tabIndex={0}
-      onClick={() => onOpen(task)}
-      onKeyDown={keyDown}
+      {...(overlay || !enableSorting ? {} : sortable.attributes)}
+      {...(overlay || !enableSorting ? {} : sortable.listeners)}
+      role={items.length ? undefined : "button"}
+      tabIndex={items.length ? undefined : 0}
+      aria-label={items.length ? undefined : `${task.title}, приоритет ${task.priority === "HIGH" ? "высокий" : task.priority === "MEDIUM" ? "средний" : "низкий"}${overdue ? ", просрочено" : ""}`}
+      onClick={items.length ? undefined : () => onOpen(task)}
+      onKeyDown={items.length ? undefined : keyDown}
     >
-      <div className="task-accent" />
+      <div className="task-accent" aria-hidden="true" />
       <div className="task-card-content">
         <div className="task-card-top">
+          <span className="drag-handle" aria-hidden="true"><HolderOutlined /></span>
           <span className="task-id">
             {cardPrefix}
             {String(task.id).padStart(3, "0")}
           </span>
           <span
             className={`priority-dot ${priorityClass[task.priority]}`}
-            title={task.priority}
+            title={`Приоритет: ${task.priority}`}
+             aria-label={`Приоритет: ${task.priority}`}
           />
           {items.length ? (
             <Dropdown menu={{ items }} trigger={["click"]}>
@@ -98,7 +105,9 @@ export function TaskCard({
                 type="text"
                 size="small"
                 icon={<MoreOutlined />}
+                aria-label="Действия с задачей"
                 onClick={(event) => event.stopPropagation()}
+                onKeyDown={(event) => event.stopPropagation()}
               />
             </Dropdown>
           ) : null}

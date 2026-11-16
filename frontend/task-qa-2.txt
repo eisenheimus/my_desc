@@ -1,0 +1,14 @@
+Task QA-2 — data integration preparation
+
+Status: completed
+
+Prepared isolated integration modules without modifying App, shell, or board:
+- src/hooks/useTaskData.ts — server-backed task state, loading/error/saving flags, CRUD/move actions, stale request protection.
+- src/hooks/useTaskView.ts — view-level search/filter state adapter.
+- src/hooks/index.ts — stable hook exports.
+- src/hooks/useTaskPreferences.ts — localStorage persistence for search, due-days and overdue card color (safe fallback when storage is unavailable).
+- src/utils/taskFilters.ts — pure query/status/priority/overdue filtering and ordering.
+
+Integration note: shell/board can import useTaskData/useTaskView when their work is complete. Backend API paths and payload contracts remain unchanged.
+
+Validation note: typecheck/build could not run because frontend dependencies are incomplete (missing node_modules/typescript/bin/tsc).
