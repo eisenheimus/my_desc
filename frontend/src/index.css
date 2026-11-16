@@ -15,7 +15,7 @@
     --text: #20283b;
     --muted: #8790a5;
     --primary: #6d5dfc;
-    --shadow: 0 10px 30px rgba(36, 43, 70, .06);
+    --shadow: 0 14px 34px rgba(34, 54, 105, .08);
 }
 
 :root[data-theme='dark'] {
@@ -38,7 +38,10 @@ body,
 body {
     margin: 0;
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
+    background:
+        radial-gradient(circle at 8% 0%, rgba(67, 97, 238, .12), transparent 28rem),
+        radial-gradient(circle at 92% 8%, rgba(32, 201, 151, .08), transparent 24rem),
+        var(--bg);
     color: var(--text);
 }
 
@@ -190,7 +193,7 @@ body {
 }
 
 .page-heading {
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 24px;
     margin-bottom: 28px;
 }
@@ -252,9 +255,10 @@ body {
     min-height: calc(100vh - 350px);
     height: auto;
     padding: 10px;
-    background: var(--surface-muted);
+    background: linear-gradient(180deg, rgba(255,255,255,.9), var(--surface-muted));
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 18px;
+    box-shadow: var(--shadow);
     transition: .2s ease;
 }
 
@@ -377,9 +381,9 @@ body {
     display: flex;
     overflow: hidden;
     min-height: 112px;
-    background: var(--surface);
-    border: 1px solid var(--task-color);
-    border-radius: 13px;
+    background: linear-gradient(145deg, var(--surface), color-mix(in srgb, var(--surface-muted), white 45%));
+    border: 1px solid color-mix(in srgb, var(--task-color), var(--border) 45%);
+    border-radius: 15px;
     box-shadow: var(--shadow);
     cursor: grab;
     transition: transform .2s, box-shadow .2s, border-color .2s;
@@ -513,11 +517,26 @@ body {
 }
 
 .collection-cards {
+    min-height: 360px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 14px;
     padding: 4px;
 }
+
+.collection-empty {
+    grid-column: 1 / -1;
+    min-height: 340px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 8px;
+    color: var(--muted);
+    text-align: center;
+}
+
+.collection-empty strong { color: var(--text); font-size: 16px; }
+.collection-empty .empty-column-icon { margin-bottom: 4px; }
 
 .collection-cards .task-card {
     background: var(--surface);
@@ -610,7 +629,8 @@ body {
     }
 
     .header-actions .ant-btn-primary {
-        font-size: 0;
+        min-width: 40px;
+        padding-inline: 10px;
     }
 
     .header-actions .ant-btn-primary .anticon {

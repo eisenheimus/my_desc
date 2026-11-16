@@ -158,15 +158,10 @@ export default function App({ dark, onToggleTheme }: AppProps) {
     setSaving(true);
     try {
       const payload = {
-        ...values,
-        color:
-          values.status === "ASSIGNED"
-            ? ENV_CARD_COLORS.created
-            : values.status === "BACKLOG"
-              ? ENV_CARD_COLORS.backlog
-              : values.status === "ARCHIVED"
-                ? ENV_CARD_COLORS.archived
-                : values.color,
+        title: values.title,
+        description: values.description,
+        status: values.status,
+        priority: values.priority,
         createdAt: values.createdAt.toISOString(),
         dueDate: values.dueDate.toISOString(),
       };
@@ -441,7 +436,7 @@ export default function App({ dark, onToggleTheme }: AppProps) {
                     <span className="column-count">{backlog.length}</span>
                   </div>
                 </div>
-                <div className="collection-cards">{renderCards(backlog)}</div>
+                <div className="collection-cards">{backlog.length ? renderCards(backlog) : <div className="collection-empty" role="status"><span className="empty-column-icon" aria-hidden="true">✦</span><strong>Здесь пока пусто</strong><span>Добавьте новую задачу, чтобы начать работу</span></div>}</div>
               </div>
             </Spin>
           </>

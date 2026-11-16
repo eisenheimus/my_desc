@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import {
   Button,
-  ColorPicker,
   DatePicker,
   Form,
   Input,
@@ -18,7 +17,6 @@ export interface TaskFormValues {
   description: string;
   status: TaskStatus;
   priority: TaskPriority;
-  color: string;
   createdAt: Dayjs;
   dueDate: Dayjs;
 }
@@ -56,7 +54,6 @@ export function TaskModal({
         description: task?.description ?? "",
         status: task?.status ?? "ASSIGNED",
         priority: task?.priority ?? "LOW",
-        color: task?.color?.toUpperCase() ?? "#FFFFFF",
         createdAt: created,
         dueDate: task
           ? dayjs(task.dueDate)
@@ -66,15 +63,10 @@ export function TaskModal({
   }, [open, task, form, defaultDueDays]);
   const submit = async () => {
     const values = await form.validateFields();
-    const color =
-      typeof values.color === "string"
-        ? values.color
-        : "#FFFFFF";
     await onSubmit({
       ...values,
       title: values.title.trim(),
       description: values.description.trim(),
-      color,
     });
   };
   return (
@@ -149,28 +141,7 @@ export function TaskModal({
             style={{ width: "100%" }}
           />
         </Form.Item>
-        <Form.Item name="color" label="Цвет карточки">
-          <ColorPicker
-            format="hex"
-            showText
-            presets={[
-              {
-                label: "Палитра",
-                colors: [
-                  "#FFFFFF",
-                  "#E0E7FF",
-                  "#D1FAE5",
-                  "#FEF3C7",
-                  "#FCE7F3",
-                  "#FEE2E2",
-                  "#FFEDD5",
-                  "#DBEAFE",
-                  "#F3E8FF",
-                ],
-              },
-            ]}
-          />
-        </Form.Item>
+
         {task && onDelete ? (
           <Popconfirm
             title="Удалить задачу?"
