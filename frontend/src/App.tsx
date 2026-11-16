@@ -104,6 +104,7 @@ export default function App({ dark, onToggleTheme }: AppProps) {
     setModalOpen(true);
   };
   const openSettings = () => setTab("settings");
+  const goToBoard = () => setTab("board");
   const openEdit = (task: Task) => {
     setEditingTask(task);
     setModalOpen(true);
@@ -383,7 +384,12 @@ export default function App({ dark, onToggleTheme }: AppProps) {
       <Content className="content-wrap">
         {navigation}
         {tab === "settings" ? (
-          settingsPage
+          <>
+            <div className="settings-back-row">
+              <Button type="link" icon={<AppstoreOutlined />} onClick={goToBoard}>Вернуться на доску</Button>
+            </div>
+            {settingsPage}
+          </>
         ) : tab === "board" ? (
           <>
             {stats}

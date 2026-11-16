@@ -80,11 +80,11 @@ export function TaskCard({
       className={`task-card${overlay ? " task-card-overlay" : ""}${archived ? " task-card-archived" : ""}${overdue ? " task-card-overdue" : ""}`}
       {...(overlay || !enableSorting ? {} : sortable.attributes)}
       {...(overlay || !enableSorting ? {} : sortable.listeners)}
-      role={items.length ? undefined : "button"}
-      tabIndex={items.length ? undefined : 0}
-      aria-label={items.length ? undefined : `${task.title}, приоритет ${task.priority === "HIGH" ? "высокий" : task.priority === "MEDIUM" ? "средний" : "низкий"}${overdue ? ", просрочено" : ""}`}
-      onClick={items.length ? undefined : () => onOpen(task)}
-      onKeyDown={items.length ? undefined : keyDown}
+      role="button"
+      tabIndex={0}
+      aria-label={`${task.title}, приоритет ${task.priority === "HIGH" ? "высокий" : task.priority === "MEDIUM" ? "средний" : "низкий"}${overdue ? ", просрочено" : ""}`}
+      onClick={() => onOpen(task)}
+      onKeyDown={keyDown}
     >
       <div className="task-accent" aria-hidden="true" />
       <div className="task-card-content">
