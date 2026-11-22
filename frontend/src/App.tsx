@@ -452,7 +452,7 @@ export default function App({ dark, onToggleTheme }: AppProps) {
                   </div>
                 </div>
                 <div className="collection-cards">
-                  {renderCards(archived, "restore")}
+                  {archived.length ? renderCards(archived, "restore") : <div className="collection-empty" role="status"><span className="empty-column-icon" aria-hidden="true">✦</span><strong>Здесь пока пусто</strong><span>Архив пока пуст</span></div>}
                 </div>
               </div>
             </Spin>
