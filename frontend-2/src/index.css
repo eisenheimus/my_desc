@@ -12,11 +12,14 @@ button:focus-visible, input:focus-visible, .task-card:focus-visible { outline: 2
 .app-shell { min-height: 100vh; background: var(--color-bg); }
 .app-header { display: none; }
 .content-wrap { min-height: 0; width: 100%; max-width: none; margin: 0; padding: 22px 32px 40px; display: block; background: var(--color-bg); }
+
 .header-inner, .header-actions, .brand, .page-heading, .column-title, .task-card-top, .stats-row { display: flex; align-items: center; }
 .header-actions { gap: 8px; }
 .brand-title { font-size: 17px; font-weight: 700; }
 .page-heading { justify-content: space-between; gap: 20px; margin: 10px 0 22px; }
 .page-heading h1 { margin: 0; color: var(--color-text); font-size: 24px; line-height: 1.25; font-weight: 600; letter-spacing: -.02em; }
+.page-title-with-icon { display: flex; align-items: center; gap: 10px; }
+.page-title-with-icon > .anticon { color: #9fadbc; font-size: 20px; }
 .page-heading p { margin: 5px 0 0; color: var(--color-text-muted); font-size: 13px; }
 .page-heading-actions { display: flex; align-items: center; gap: 8px; }
 .page-create-button, .jira-create-button { background: #579dff !important; border-color: #579dff !important; color: #092957 !important; font-weight: 650; box-shadow: none !important; }
@@ -32,18 +35,11 @@ button:focus-visible, input:focus-visible, .task-card:focus-visible { outline: 2
 .jira-nav-item.is-active::after { content: ''; position: absolute; bottom: 0; left: 10px; right: 10px; height: 2px; background: #579dff; }
 .jira-topbar-spacer { flex: 1; }
 .jira-topbar .ant-btn { height: 30px; }
-.jira-settings-button { color: #9fadbc !important; }
-.jira-settings-button:hover { color: #dfe1e6 !important; background: #343a40 !important; }
 .jira-user-avatar { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; background: #579dff; color: #092957; font-size: 11px; font-weight: 700; }
 .mobile-menu-button { display: none; border: 0; background: transparent; color: #9fadbc; padding: 4px; }
 .jira-body { min-height: calc(100vh - 44px); display: flex; flex: 1; flex-direction: row; background: #1d2125; }
 .project-sidebar { width: 224px; flex: 0 0 224px; display: flex; flex-direction: column; padding: 22px 12px 14px; background: #1d2125; border-right: 1px solid #343a40; color: #9fadbc; }
-.project-summary { display: flex; align-items: center; gap: 10px; padding: 0 7px; margin-bottom: 28px; }
-.project-summary > span:last-child { display: grid; gap: 3px; min-width: 0; }
-.project-summary strong { color: #dfe1e6; font-size: 13px; font-weight: 650; }
-.project-summary small { color: #8593a2; font-size: 11px; }
-.project-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 5px; color: #e9f2ff; background: linear-gradient(145deg,#6554c0,#403294); font-size: 10px; font-weight: 800; }
-.sidebar-section-label { margin: 0 8px 10px; color: #8593a2; font-size: 10px; font-weight: 700; letter-spacing: .06em; }
+.project-name { margin-top: 0; }
 .project-name { padding: 8px 9px 7px; color: #b6c2cf; font-size: 12px; font-weight: 600; }
 .project-nav { display: grid; gap: 3px; }
 .project-nav-item { min-height: 34px; display: flex; align-items: center; gap: 10px; width: 100%; padding: 0 10px; border: 0; border-radius: 4px; color: #9fadbc; background: transparent; text-align: left; font-size: 12px; }
@@ -53,21 +49,14 @@ button:focus-visible, input:focus-visible, .task-card:focus-visible { outline: 2
 .project-nav-count { margin-left: auto; color: #9fadbc; font-size: 11px; }
 .sidebar-footer { display: flex; align-items: center; gap: 7px; margin-top: auto; padding: 12px 8px 0; border-top: 1px solid #343a40; color: #8593a2; font-size: 10px; }
 .connection-dot, .toolbar-dot { width: 7px; height: 7px; border-radius: 50%; background: #4bce97; }
-.jira-content { min-width: 0; flex: 1; padding: 22px 30px 40px; background: #1d2125; }
-.jira-breadcrumb { display: flex; align-items: center; gap: 8px; color: #9fadbc; font-size: 11px; }
-.jira-breadcrumb strong { color: #dfe1e6; font-weight: 500; }
-.breadcrumb-separator { color: #73808c; }
-.board-toolbar { min-height: 44px; margin: 18px 0 17px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 9px; border: 1px solid #343a40; border-radius: 5px; background: #22272b; }
-.board-selector { display: inline-flex; align-items: center; gap: 9px; color: #b6c2cf; font-size: 12px; font-weight: 600; }
-.board-selector > .anticon { color: #9fadbc; }
-.board-selector-chevron { color: #8593a2; }
-.board-toolbar-meta { display: inline-flex; align-items: center; gap: 9px; }
-.toolbar-pill { display: inline-flex; align-items: center; gap: 7px; color: #9fadbc; font-size: 11px; }
-.board-toolbar .ant-btn { color: #9fadbc; }
+.jira-content { min-width: 1200px; max-width: 1800px; width: 100%; margin-inline: auto; flex: 1; padding: 22px 30px 40px; background: #1d2125; }
 .stats-row { gap: 12px; margin: 0 0 17px; }
 .stats-row > div { min-width: 118px; padding: 10px 13px; border: 1px solid #343a40; border-radius: 5px; background: #22272b; box-shadow: none; }
 .stats-row span { display: block; color: #9fadbc; font-size: 10px; }
 .stats-row strong { display: block; margin-top: 3px; color: #dfe1e6; font-size: 17px; }
+.stats-row > div:nth-child(1) strong { color: #f5cd47; }
+.stats-row > div:nth-child(2) strong { color: #579dff; }
+.stats-row > div:nth-child(3) strong { color: #4bce97; }
 .board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; align-items: stretch; min-width: 0; }
 .kanban-column { min-width: 0; min-height: calc(100vh - 240px); padding: 0 5px 8px; background: #161a1d; border: 1px solid #2c3338; border-radius: 5px; box-shadow: none; }
 .kanban-column.is-over { border-color: var(--column-accent); box-shadow: inset 0 0 0 1px var(--column-accent); }
@@ -92,12 +81,12 @@ button:focus-visible, input:focus-visible, .task-card:focus-visible { outline: 2
 .task-accent { width: 3px; flex: 0 0 3px; background: var(--task-color); }
 .task-card-content { min-width: 0; flex: 1; padding: 8px 9px; }
 .task-card-top { min-height: 17px; display: flex; align-items: center; gap: 6px; }
-.task-card-title { margin-top: 4px; color: #dfe1e6; font-size: 12px; line-height: 1.4; font-weight: 500; }
-.task-description-preview { margin-top: 4px; color: #9fadbc; font-size: 11px; line-height: 1.35; }
+.task-card-title { margin-top: 4px; color: #dfe1e6; font-size: 16px; line-height: 1.4; font-weight: 500; }
+.task-description-preview { margin: 15px 0 20px 5px; color: #9fadbc; font-size: 11px; line-height: 1.35; }
 .task-id { color: #8593a2; font-size: 10px; }
 .drag-handle { color: #8593a2; font-size: 11px; }
 .priority-dot { width: 7px; height: 7px; border-radius: 2px; }
-.priority-low { background: #579dff; }
+.priority-low { background: yellow; }
 .priority-medium { background: #f5cd47; }
 .priority-high { background: #f87168; }
 .task-card-archived { background: #202428; border-color: #343a40; }
@@ -128,5 +117,5 @@ button:focus-visible, input:focus-visible, .task-card:focus-visible { outline: 2
 .ant-btn-default { color: #b6c2cf; background: #22272b; border-color: #454c54; }
 .sidebar-backdrop { display: none; }
 @media (max-width: 1100px) { .project-sidebar { width: 190px; flex-basis: 190px; } .jira-content { padding-inline: 20px; } .board { grid-template-columns: repeat(3,minmax(260px,1fr)); overflow-x: auto; padding-bottom: 10px; } }
-@media (max-width: 760px) { .mobile-menu-button { display: inline-grid; place-items: center; } .jira-topbar { gap: 10px; padding-inline: 12px; } .jira-global-nav { display: none; } .jira-global-nav.is-open { display: flex; position: absolute; top: 43px; left: 0; right: 0; height: 42px; padding: 0 8px; background: #22272b; border-bottom: 1px solid #343a40; z-index: 40; } .jira-brand { font-size: 13px; } .jira-create-button { padding-inline: 8px; } .jira-body { position: relative; } .project-sidebar { position: fixed; z-index: 50; top: 44px; bottom: 0; left: 0; width: 230px; transform: translateX(-100%); transition: transform .18s ease; box-shadow: var(--shadow-md); } .project-sidebar.is-open { transform: translateX(0); } .sidebar-backdrop { display: block; position: fixed; z-index: 45; inset: 44px 0 0; border: 0; background: rgba(0,0,0,.55); } .jira-content { padding: 17px 13px 28px; } .page-heading { align-items: flex-start; flex-direction: column; gap: 12px; } .page-heading-actions { width: 100%; } .page-heading-actions .ant-btn { flex: 1; } .stats-row { overflow-x: auto; } .board-toolbar { margin-top: 10px; } }
+@media (max-width: 760px) { .mobile-menu-button { display: inline-grid; place-items: center; } .jira-topbar { gap: 10px; padding-inline: 12px; } .jira-global-nav { display: none; } .jira-global-nav.is-open { display: flex; position: absolute; top: 43px; left: 0; right: 0; height: 42px; padding: 0 8px; background: #22272b; border-bottom: 1px solid #343a40; z-index: 40; } .jira-brand { font-size: 13px; } .jira-body { position: relative; } .project-sidebar { position: fixed; z-index: 50; top: 44px; bottom: 0; left: 0; width: 230px; transform: translateX(-100%); transition: transform .18s ease; box-shadow: var(--shadow-md); } .project-sidebar.is-open { transform: translateX(0); } .sidebar-backdrop { display: block; position: fixed; z-index: 45; inset: 44px 0 0; border: 0; background: rgba(0,0,0,.55); } .jira-content { padding: 17px 13px 28px; } .page-heading { align-items: flex-start; flex-direction: column; gap: 12px; } .page-heading-actions { width: 100%; } .page-heading-actions .ant-btn { flex: 1; } .stats-row { overflow-x: auto; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }

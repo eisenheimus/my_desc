@@ -193,15 +193,11 @@ export default function App() {
           {NAV_ITEMS.map((item) => <button key={item.key} type="button" className={`jira-nav-item${tab === item.key ? " is-active" : ""}`} aria-current={tab === item.key ? "page" : undefined} onClick={() => selectTab(item.key)}>{item.label}</button>)}
         </nav>
         <div className="jira-topbar-spacer" />
-        <Button className="jira-create-button" type="primary" icon={<PlusOutlined />} onClick={openCreate}>Создать</Button>
-        <Button className="jira-settings-button" type="text" aria-label="Настройки" title="Настройки" icon={<SettingOutlined />} onClick={() => selectTab("settings")} />
         <span className="jira-user-avatar" aria-label="Профиль пользователя">М</span>
       </header>
 
       <Layout className="jira-body">
         <aside className={`project-sidebar${mobileNavOpen ? " is-open" : ""}`} aria-label="Навигация проекта">
-          <div className="project-summary"><span className="project-icon">MD</span><span><strong>My desk</strong><small>Рабочее пространство</small></span></div>
-          <div className="sidebar-section-label">ПЛАНИРОВАНИЕ</div>
           <div className="project-name">Личный проект</div>
           <nav className="project-nav" aria-label="Разделы проекта">
             {NAV_ITEMS.map((item) => <button key={item.key} type="button" className={`project-nav-item${tab === item.key ? " is-active" : ""}`} aria-current={tab === item.key ? "page" : undefined} onClick={() => selectTab(item.key)}><span className="project-nav-icon">{item.icon}</span><span>{item.label}</span>{item.key === "archive" && archived.length ? <span className="project-nav-count">{archived.length}</span> : null}</button>)}
@@ -211,21 +207,16 @@ export default function App() {
         {mobileNavOpen ? <button className="sidebar-backdrop" aria-label="Закрыть навигацию" onClick={() => setMobileNavOpen(false)} /> : null}
 
         <Content className="jira-content">
-          <div className="jira-breadcrumb"><span>Проекты</span><span className="breadcrumb-separator">/</span><span>My desk</span><span className="breadcrumb-separator">/</span><strong>{pageTitle}</strong></div>
           <section className="page-heading">
-            <div><h1>{pageTitle}</h1><p>{pageDescription}</p></div>
+            <div><h1 className="page-title-with-icon">{tab === "board" ? <AppstoreOutlined /> : tab === "backlog" ? <UnorderedListOutlined /> : tab === "archive" ? <InboxOutlined /> : <SettingOutlined />}<span>{pageTitle}</span></h1><p>{pageDescription}</p></div>
             <div className="page-heading-actions">
-              {tab === "board" ? <Button className="view-settings-button" icon={<SettingOutlined />} onClick={() => selectTab("settings")}>Настройки доски</Button> : null}
+              {tab !== "settings" ? <Button className="view-settings-button" icon={<SettingOutlined />} onClick={() => selectTab("settings")}>Настройки доски</Button> : null}
               {tab !== "settings" ? <Button className="page-create-button" type="primary" icon={<PlusOutlined />} onClick={openCreate}>Создать задачу</Button> : null}
             </div>
           </section>
 
           {tab === "settings" ? settingsPage : tab === "board" ? (
             <>
-              <div className="board-toolbar">
-                <div className="board-selector"><AppstoreOutlined /><span>Канбан-доска</span><span className="board-selector-chevron">⌄</span></div>
-                <div className="board-toolbar-meta"><span className="toolbar-pill"><span className="toolbar-dot" /> {tasks.length} задач</span><Button type="text" icon={<SettingOutlined />} aria-label="Настройки доски" title="Настройки доски" onClick={() => selectTab("settings")} /></div>
-              </div>
               {stats}
               <Spin spinning={loading}>
                 <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={() => setActiveId(null)}>
@@ -238,9 +229,9 @@ export default function App() {
               </Spin>
             </>
           ) : tab === "backlog" ? (
-            <><div className="board-toolbar"><div className="board-selector"><UnorderedListOutlined /><span>Бэклог задач</span></div><span className="toolbar-pill">{backlog.length} задач</span></div>{stats}<Spin spinning={loading}><section className="collection-panel"><div className="column-header"><h2 className="column-title">Не назначенные задачи <Tag>{backlog.length}</Tag></h2></div><div className="collection-cards">{backlog.length ? renderCards(backlog) : <div className="collection-empty" role="status"><span className="empty-column-icon" aria-hidden="true">✦</span><strong>Здесь пока пусто</strong><span>Добавьте новую задачу, чтобы начать работу</span></div>}</div></section></Spin></>
+            <>{stats}<Spin spinning={loading}><section className="collection-panel"><div className="column-header"><h2 className="column-title">Не назначенные задачи <Tag>{backlog.length}</Tag></h2></div><div className="collection-cards">{backlog.length ? renderCards(backlog) : <div className="collection-empty" role="status"><span className="empty-column-icon" aria-hidden="true">✦</span><strong>Здесь пока пусто</strong><span>Добавьте новую задачу, чтобы начать работу</span></div>}</div></section></Spin></>
           ) : (
-            <><div className="board-toolbar"><div className="board-selector"><InboxOutlined /><span>Архив задач</span></div><span className="toolbar-pill">{archived.length} задач</span></div>{stats}<Spin spinning={loading}><section className="collection-panel"><div className="column-header"><h2 className="column-title">Архивные задачи <Tag>{archived.length}</Tag></h2></div><div className="collection-cards">{archived.length ? renderCards(archived, "restore") : <div className="collection-empty" role="status"><span className="empty-column-icon" aria-hidden="true">✦</span><strong>Здесь пока пусто</strong><span>Архив пока пуст</span></div>}</div></section></Spin></>
+            <>{stats}<Spin spinning={loading}><section className="collection-panel"><div className="column-header"><h2 className="column-title">Архивные задачи <Tag>{archived.length}</Tag></h2></div><div className="collection-cards">{archived.length ? renderCards(archived, "restore") : <div className="collection-empty" role="status"><span className="empty-column-icon" aria-hidden="true">✦</span><strong>Здесь пока пусто</strong><span>Архив пока пуст</span></div>}</div></section></Spin></>
           )}
         </Content>
       </Layout>

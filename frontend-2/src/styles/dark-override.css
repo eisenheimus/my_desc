@@ -27,10 +27,14 @@
 .empty-column { color: #858d9b; border-color: #3b414d; }
 .task-card { min-height: 108px; background: #292c34; border-color: color-mix(in srgb, var(--task-color), #383c47 48%); border-radius: 9px; box-shadow: 0 6px 16px rgba(0,0,0,.15); }
 .task-card:hover, .task-card:focus-visible { box-shadow: 0 10px 22px rgba(0,0,0,.25); }
-.task-card-title { color: #f4f6f8; font-weight: 700; }
+.task-card-title { color: #f4f6f8; font-weight: 700; font-size: 16px; }
 .task-description-preview, .task-card-footer { color: #aeb4c0; }
+.task-description-preview { margin: 15px 0 20px 5px; }
 .task-id { color: #8f98a8; }
-.priority-low { background: #438cf5; box-shadow: 0 0 0 3px rgba(67,140,245,.14); }
+.priority-low { background: yellow; box-shadow: 0 0 0 3px rgba(255,255,0,.14); }
+.stats-row > div:nth-child(1) strong { color: #f5cd47; }
+.stats-row > div:nth-child(2) strong { color: #579dff; }
+.stats-row > div:nth-child(3) strong { color: #4bce97; }
 .priority-medium { background: #f2ae45; box-shadow: 0 0 0 3px rgba(242,174,69,.14); }
 .priority-high { background: #ed6575; box-shadow: 0 0 0 3px rgba(237,101,117,.14); }
 .collection-cards .task-card { background: #292c34; }
