@@ -23,12 +23,12 @@ export interface StatusColumn {
   accent: string;
 }
 export const STATUS_COLUMNS: StatusColumn[] = [
-  { key: "ASSIGNED", title: "Назначено", accent: "#6d5dfc" },
-  { key: "IN_PROGRESS", title: "В работе", accent: "#1687ff" },
-  { key: "DONE", title: "Завершено", accent: "#21b36b" },
+  { key: "ASSIGNED", title: "В очереди", accent: "#20c4d8" },
+  { key: "IN_PROGRESS", title: "В работе", accent: "#438cf5" },
+  { key: "DONE", title: "Завершено", accent: "#40c987" },
 ];
 export const STATUS_LABELS: Record<TaskStatus, string> = {
-  ASSIGNED: "Назначено",
+  ASSIGNED: "В очереди",
   IN_PROGRESS: "В работе",
   DONE: "Завершено",
   BACKLOG: "Бэклог",
