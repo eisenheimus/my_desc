@@ -35,9 +35,13 @@
 .stats-row > div:nth-child(1) strong { color: #f5cd47; }
 .stats-row > div:nth-child(2) strong { color: #579dff; }
 .stats-row > div:nth-child(3) strong { color: #4bce97; }
-.priority-medium { background: #f2ae45; box-shadow: 0 0 0 3px rgba(242,174,69,.14); }
-.priority-high { background: #ed6575; box-shadow: 0 0 0 3px rgba(237,101,117,.14); }
+.priority-medium { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,.14); }
+.priority-high { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.14); }
+.priority-dot-collection { background: #c4cbd3 !important; box-shadow: none !important; }
 .collection-cards .task-card { background: #292c34; }
+.task-card-collection { min-width: 600px; height: 150px; max-width: 100%; box-sizing: border-box; }
+.task-card-collection .task-card-content { min-height: 0; overflow: hidden; }
+.task-card-collection .task-description-preview { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; text-overflow: ellipsis; }
 .settings-page .column-title { color: #f3f5f8; }
 .settings-card { background: #292c34; border-color: var(--color-border); }
 .settings-card label { color: #d8dde5; }

@@ -14,6 +14,7 @@ interface Props {
   archivedColor?: string;
   overdueColor?: string;
   cardPrefix?: string;
+  collection?: boolean;
   sortable?: boolean;
 }
 const priorityClass = {
@@ -30,7 +31,8 @@ export function TaskCard({
   assignedColor = "#5F76FC",
   archivedColor = "#000000",
   overdueColor = "#ef7777",
-  cardPrefix = "CARD-", 
+  cardPrefix = "CARD-",
+  collection = false,
   sortable: enableSorting = true,
 }: Props) {
   const sortable = useSortable({ id: task.id, disabled: !enableSorting });
@@ -77,7 +79,7 @@ export function TaskCard({
     <div
       ref={overlay || !enableSorting ? undefined : sortable.setNodeRef}
       style={style}
-      className={`task-card${overlay ? " task-card-overlay" : ""}${archived ? " task-card-archived" : ""}${overdue ? " task-card-overdue" : ""}`}
+      className={`task-card${overlay ? " task-card-overlay" : ""}${archived ? " task-card-archived" : ""}${overdue ? " task-card-overdue" : ""}${collection ? " task-card-collection" : ""}`}
       {...(overlay || !enableSorting ? {} : sortable.attributes)}
       {...(overlay || !enableSorting ? {} : sortable.listeners)}
       role="button"
@@ -95,7 +97,7 @@ export function TaskCard({
             {String(task.id).padStart(3, "0")}
           </span>
           <span
-            className={`priority-dot ${priorityClass[task.priority]}`}
+            className={`priority-dot ${priorityClass[task.priority]}${collection ? " priority-dot-collection" : ""}`}
             title={`Приоритет: ${task.priority}`}
              aria-label={`Приоритет: ${task.priority}`}
           />

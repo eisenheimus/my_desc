@@ -150,7 +150,7 @@ export default function App() {
   const renderCards = (items: Task[], action?: "restore") => items.length ? items.map((task) => (
     <TaskCard key={task.id} task={task} assignedColor={ENV_CARD_COLORS.created} archivedColor={ENV_CARD_COLORS.archived}
       overdueColor={settings.overdueColor} cardPrefix={CARD_PREFIX} onOpen={openEdit}
-      onRestore={action === "restore" ? restore : undefined} sortable={false} />
+      onRestore={action === "restore" ? restore : undefined} collection sortable={false} />
   )) : <Empty description="Задач пока нет" />;
 
   const pageTitle = tab === "board" ? "Доска" : tab === "backlog" ? "Бэклог" : tab === "archive" ? "Архив" : "Настройки";

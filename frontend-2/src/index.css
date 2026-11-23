@@ -49,7 +49,7 @@ button:focus-visible, input:focus-visible, .task-card:focus-visible { outline: 2
 .project-nav-count { margin-left: auto; color: #9fadbc; font-size: 11px; }
 .sidebar-footer { display: flex; align-items: center; gap: 7px; margin-top: auto; padding: 12px 8px 0; border-top: 1px solid #343a40; color: #8593a2; font-size: 10px; }
 .connection-dot, .toolbar-dot { width: 7px; height: 7px; border-radius: 50%; background: #4bce97; }
-.jira-content { min-width: 1200px; max-width: 1800px; width: 100%; margin-inline: auto; flex: 1; padding: 22px 30px 40px; background: #1d2125; }
+.jira-content { min-width: 1200px; max-width: 1400px; width: 100%; flex: 1; padding: 22px 30px 40px; background: #1d2125; }
 .stats-row { gap: 12px; margin: 0 0 17px; }
 .stats-row > div { min-width: 118px; padding: 10px 13px; border: 1px solid #343a40; border-radius: 5px; background: #22272b; box-shadow: none; }
 .stats-row span { display: block; color: #9fadbc; font-size: 10px; }
@@ -87,14 +87,18 @@ button:focus-visible, input:focus-visible, .task-card:focus-visible { outline: 2
 .drag-handle { color: #8593a2; font-size: 11px; }
 .priority-dot { width: 7px; height: 7px; border-radius: 2px; }
 .priority-low { background: yellow; }
-.priority-medium { background: #f5cd47; }
-.priority-high { background: #f87168; }
+.priority-medium { background: #f59e0b; }
+.priority-high { background: #ef4444; }
+.priority-dot-collection { background: #c4cbd3 !important; box-shadow: none !important; }
 .task-card-archived { background: #202428; border-color: #343a40; }
 .task-card-archived .task-card-title { color: #aebbc6; }
+.task-card-collection { min-width: 600px; height: 150px; max-width: 100%; box-sizing: border-box; }
+.task-card-collection .task-card-content { min-height: 0; overflow: hidden; }
+.task-card-collection .task-description-preview { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; text-overflow: ellipsis; }
 .collection-panel, .settings-page { min-height: 280px; padding: 0 8px 10px; background: #161a1d; border: 1px solid #343a40; border-radius: 5px; box-shadow: none; }
 .collection-panel .column-header, .settings-page .column-header { margin: 0 -3px 8px; }
-.collection-cards { min-height: 340px; display: grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap: 6px; padding: 3px; }
-.collection-empty { grid-column: 1 / -1; min-height: 330px; display: grid; place-content: center; justify-items: center; gap: 8px; color: #9fadbc; text-align: center; }
+.collection-cards { min-height: 340px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px; padding: 3px; }
+.collection-empty { flex: 1 1 100%; min-height: 330px; display: grid; place-content: center; justify-items: center; gap: 8px; color: #9fadbc; text-align: center; }
 .collection-empty strong { color: #dfe1e6; font-size: 14px; }
 .collection-empty .empty-column-icon { color: #579dff; font-size: 28px; }
 .settings-page { padding-bottom: 16px; }
